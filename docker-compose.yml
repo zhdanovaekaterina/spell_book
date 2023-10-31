@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  database:
+    image: mysql:8.0.30
+    container_name: database
+    env_file:
+      - .env
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "33060:3306"
+    volumes:
+      - type: volume
+        source: spell_book_db
+        target: /var/lib/mysql
+
+volumes:
+  spell_book_db:

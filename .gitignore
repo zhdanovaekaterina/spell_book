@@ -4,3 +4,4 @@ venv
 alembic
 alembic.ini
 *pycache*
+.pytest_cache

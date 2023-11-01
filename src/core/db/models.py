@@ -17,6 +17,10 @@ class School(Base):
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
 
+    # TODO: вынести формирование строкового представления на уровень выше
+    def __repr__(self):
+        return f'<School: alias={self.alias}, title={self.title}>'
+
 
 class TimeToCast(Base):
     """

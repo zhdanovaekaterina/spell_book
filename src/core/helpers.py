@@ -4,7 +4,7 @@
 import logging
 from time import time
 
-from core import config
+from src.core import config
 
 logger = logging.getLogger(__name__)
 

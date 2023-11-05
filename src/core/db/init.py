@@ -64,7 +64,7 @@ class DataBase:
         """
 
         with Session(self.engine) as session:
-            query = session.query(School)
+            query = session.query(entity)
 
             if add_filter:
                 key = list(add_filter.keys())

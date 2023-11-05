@@ -1,7 +1,8 @@
 import logging
 
-from .fixture import clean_db
-from src.core.db.models import School
+from .fixture import clean_db, import_data
+from src.core.importer import Importer
+from src.core.db.models import School, TimeToCast, Distance, Duration
 
 logger = logging.getLogger(__name__)
 
@@ -41,3 +42,39 @@ def test_add_couple_items(clean_db):
     assert len(added) == 2
     assert isinstance(added[0], School)
     assert added[0].alias == 'illusion'
+
+
+def test_import_values_through_objects(clean_db):
+    """
+    Тест импорта из объектов
+    :return:
+    """
+
+    importer = Importer(clean_db)
+    importer.add(entity='school', alias='transmutation', title='Преобразование')
+    importer.add(entity='school', alias='illusion', title='Иллюзия')
+    importer.import_data()
+
+    added = clean_db.get(School)
+    assert len(added) == 2
+    assert isinstance(added[0], School)
+    assert added[0].alias == 'transmutation'
+
+
+def test_import_values_from_files(import_data):
+    """
+    Тест импорта из файлов
+    :param import_data:
+    :return:
+    """
+    db, paths = import_data
+    importer = Importer(db)
+
+    for p in paths:
+        importer.add_from_file(p)
+    importer.import_data()
+
+    # Проверяем что в базу добавились все значения из файлов импорта
+    for inst in [School, TimeToCast, Distance, Duration]:
+        added = db.get(inst)
+        assert len(added) > 0

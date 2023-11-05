@@ -46,3 +46,13 @@ def set_preferences():
         datefmt=config.LOG_DATEFMT,
         handlers=handlers
     )
+
+
+def snake_to_camel(input_str):
+    """
+    Конвертирует строку из snake_style в CamelStyle
+    :param input_str:
+    :return:
+    """
+
+    return "".join(x.capitalize() for x in input_str.lower().split("_"))

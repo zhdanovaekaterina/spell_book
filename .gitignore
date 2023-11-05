@@ -1,7 +1,6 @@
 venv
 .idea
 .env
-alembic
 alembic.ini
 *pycache*
 .pytest_cache

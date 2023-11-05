@@ -31,6 +31,9 @@ class TimeToCast(Base):
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
 
+    def __repr__(self):
+        return f'<TimeToCast: alias={self.alias}, title={self.title}>'
+
 
 class Distance(Base):
     """
@@ -40,6 +43,7 @@ class Distance(Base):
     __tablename__ = 'distance'
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
+    value = Column(Integer, nullable=False)
 
 
 class Duration(Base):
@@ -50,6 +54,7 @@ class Duration(Base):
     __tablename__ = 'duration'
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
+    value = Column(Integer, nullable=False)
 
 
 class Components(Base):

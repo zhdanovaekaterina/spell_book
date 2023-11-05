@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture()
-def database():
+def clean_db():
     """
-    Возвращает in-memory базу данных
+    Возвращает пустую in-memory базу данных
     """
 
     db = DataBase(TEST_DB, Base)

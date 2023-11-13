@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from src.core.db.init import DataBase
+from src.core.db.init import DatabaseDriver
 from src.core.db.models import Base
 from .data import import_data_data
 
@@ -39,7 +39,7 @@ def clean_db():
     Возвращает пустую in-memory базу данных
     """
 
-    db = DataBase(TEST_DB, Base)
+    db = DatabaseDriver(TEST_DB, Base)
     db.create_all()
 
     yield db
@@ -52,7 +52,7 @@ def import_data():
     После завершения теста очищает директорию с временными файлами.
     """
 
-    db = DataBase(TEST_DB, Base)
+    db = DatabaseDriver(TEST_DB, Base)
     db.create_all()
 
     # Создать директорию для хранения временных файлов

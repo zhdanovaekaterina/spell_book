@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy import Integer, String, Boolean, Column, ForeignKey, SmallInteger, Text
-from sqlalchemy.orm import registry
+from sqlalchemy.orm import registry, relationship
 
 logger = logging.getLogger(__name__)
 mapper_registry = registry()
@@ -91,12 +91,14 @@ class SpellMass(Base):
 
 class SpellRoll(Base):
     """
-    Справочник по типу броска: бросок атаки, спасбросок, не требует броска
+    Справочник по типу броска: бросок атаки, спасбросок по определенной характеристике,
+    не требует броска
     """
 
     __tablename__ = 'spell_roll'
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
+    characteristic = Column(String(255))
 
 
 class Source(Base):
@@ -144,6 +146,11 @@ class Spell(Base):
     ritual = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=False)
 
+    spell_effect = relationship('SpellEffect', back_populates='spell')
+
+    def __repr__(self):
+        return f'<Spell: id={self.id}, alias={self.alias}, title={self.title}>'
+
 
 class DamageType(Base):
     """
@@ -154,19 +161,10 @@ class DamageType(Base):
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
 
+    spell_effect = relationship('SpellEffect', back_populates='damage_type')
 
-class CountripEffect(Base):
-    """
-    Справочник по эффектам заговоров
-    """
-
-    __tablename__ = 'countrip_effect'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    spell_id = Column(Integer, ForeignKey('spell.id'), nullable=False)
-    caster_level = Column(SmallInteger, nullable=False, default=1)
-    dice_count = Column(SmallInteger, nullable=False, default=1)
-    dice = Column(SmallInteger, nullable=False)
-    damage_type = Column(String(32), ForeignKey('damage_type.alias'), nullable=False)
+    def __repr__(self):
+        return f'<DamageType: alias={self.alias}, title={self.title}>'
 
 
 class SpellEffect(Base):
@@ -177,10 +175,23 @@ class SpellEffect(Base):
     __tablename__ = 'spell_effect'
     id = Column(Integer, primary_key=True, autoincrement=True)
     spell_id = Column(Integer, ForeignKey('spell.id'), nullable=False)
-    cell_level = Column(SmallInteger, nullable=False, default=1)
     dice_count = Column(SmallInteger, nullable=False, default=1)
+    add_dice_count = Column(SmallInteger)
     dice = Column(SmallInteger, nullable=False)
-    damage_type = Column(String(32), ForeignKey('damage_type.alias'), nullable=False)
+    damage_type_alias = Column(String(32), ForeignKey('damage_type.alias'), nullable=False)
+    half_damage_on_success = Column(Boolean, nullable=False, default=False)
+
+    spell = relationship('Spell', back_populates='spell_effect')
+    damage_type = relationship('DamageType', back_populates='spell_effect')
+
+    def __repr__(self):
+        return f'<SpellEffect: id={self.id}, ' \
+               f'spell={self.spell}, ' \
+               f'dice_count={self.dice_count}, ' \
+               f'add_dice_count={self.add_dice_count}, ' \
+               f'dice={self.dice}, ' \
+               f'damage_type={self.damage_type}, ' \
+               f'half_damage_on_success={self.half_damage_on_success}>'
 
 
 class CastType(Base):
@@ -192,8 +203,6 @@ class CastType(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
     max_cell_level = Column(SmallInteger, nullable=False)
-    learn_spells = Column(Boolean, nullable=False, default=False)
-    prepare_spells = Column(Boolean, nullable=False, default=False)
 
 
 class CellProgress(Base):
@@ -219,6 +228,8 @@ class Class(Base):
     title = Column(String(255), nullable=False)
     cast_type = Column(Integer, ForeignKey('cast_type.id'), nullable=False)
     subclass_choose_level = Column(SmallInteger)
+    learn_spells = Column(Boolean, nullable=False, default=False)
+    prepare_spells = Column(Boolean, nullable=False, default=False)
 
 
 class Subclass(Base):

@@ -56,7 +56,7 @@ def import_data():
     db.create_all()
 
     # Создать директорию для хранения временных файлов
-    temp_dir_path = Path(Path.cwd(), 'src', 'tests', 'temp')
+    temp_dir_path = Path(Path.cwd(), 'tests', 'temp')
     if not os.path.isdir(temp_dir_path):
         os.mkdir(temp_dir_path)
 

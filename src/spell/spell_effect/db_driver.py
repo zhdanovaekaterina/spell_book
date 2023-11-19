@@ -1,5 +1,7 @@
 import logging
 
+from sqlalchemy.exc import NoResultFound
+
 from src.core.db.db_driver import DatabaseDriver
 from src.core.db.models import SpellEffect
 
@@ -19,13 +21,17 @@ class SpellEffectDatabaseDriver(DatabaseDriver):
         """
 
         with self.session:
-            data = self.session.query(SpellEffect)\
-                .filter(SpellEffect.spell_id == spell_id)\
-                .one()
+            try:
+                data = self.session.query(SpellEffect)\
+                    .filter(SpellEffect.spell_id == spell_id)\
+                    .one()
+            except NoResultFound:
+                return None
 
             return {
                 'damage_type': data.damage_type.alias,
                 'dice_count': data.dice_count,
                 'dice': data.dice,
-                'half_damage_on_success': data.half_damage_on_success,
+                'spell_level': data.spell.level,
+                'add_dice_count': data.add_dice_count,
             }

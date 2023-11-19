@@ -9,25 +9,12 @@ def effects_data():
 
     return [
         DamageType(
-            alias='fire',
-            title='Огонь'
+            alias='thunder',
+            title='Звук'
         ),
-        SpellEffect(
-            id=1,
-            spell_id=62,
-            dice_count=3,
-            add_dice_count=1,
-            dice=8,
-            damage_type_alias='fire',
-            half_damage_on_success=True
-        ),
-        SpellEffect(
-            id=2,
-            spell_id=386,
-            dice_count=3,
-            add_dice_count=1,
-            dice=8,
-            damage_type_alias='fire'
+        DamageType(
+            alias='force',
+            title='Силовое поле'
         ),
         Spell(
             id=62,
@@ -50,11 +37,11 @@ def effects_data():
             is_active=False
         ),
         Spell(
-            id=386,
-            alias='catapult',
-            title='Катапульта',
+            id=2451,
+            alias='gravity_fissure',
+            title='Гравитационный разлом',
             description='',
-            level=2,
+            level=6,
             school='',
             time_to_cast='',
             distance='',
@@ -68,5 +55,21 @@ def effects_data():
             concentration=False,
             ritual=False,
             is_active=False
-        )
+        ),
+        SpellEffect(
+            id=1,
+            spell_id=62,
+            dice_count=3,
+            add_dice_count=1,
+            dice=8,
+            damage_type_alias='thunder'
+        ),
+        SpellEffect(
+            id=2,
+            spell_id=2451,
+            dice_count=8,
+            add_dice_count=1,
+            dice=8,
+            damage_type_alias='force'
+        ),
     ]

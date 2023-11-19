@@ -99,6 +99,7 @@ class SpellRoll(Base):
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
     characteristic = Column(String(255))
+    half_damage_on_success = Column(Boolean, nullable=False, default=False)
 
 
 class Source(Base):
@@ -179,7 +180,6 @@ class SpellEffect(Base):
     add_dice_count = Column(SmallInteger)
     dice = Column(SmallInteger, nullable=False)
     damage_type_alias = Column(String(32), ForeignKey('damage_type.alias'), nullable=False)
-    half_damage_on_success = Column(Boolean, nullable=False, default=False)
 
     spell = relationship('Spell', back_populates='spell_effect')
     damage_type = relationship('DamageType', back_populates='spell_effect')
@@ -190,8 +190,7 @@ class SpellEffect(Base):
                f'dice_count={self.dice_count}, ' \
                f'add_dice_count={self.add_dice_count}, ' \
                f'dice={self.dice}, ' \
-               f'damage_type={self.damage_type}, ' \
-               f'half_damage_on_success={self.half_damage_on_success}>'
+               f'damage_type={self.damage_type}>'
 
 
 class CastType(Base):

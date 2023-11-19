@@ -1,4 +1,4 @@
-from src.core.db.init import DatabaseDriver
+from .db_driver import SpellEffectDatabaseDriver
 
 
 class SpellEffectApi:
@@ -6,10 +6,9 @@ class SpellEffectApi:
     Апи для работы с эффектами заклинаний
     """
 
-    def __init__(self, db: DatabaseDriver):
+    def __init__(self, db: SpellEffectDatabaseDriver):
         self.db = db
 
-    # @staticmethod
     def get(self, spell_id: int, cell_level: int = 0):
         """
         Получение эффекта для выбранного заклинания и уровня ячейки.
@@ -19,10 +18,17 @@ class SpellEffectApi:
         :return:
         """
 
-        effect_raw = self.db.get_spell_effect(spell_id)
-        return effect_raw
+        raw = self.db.get_spell_effect(spell_id)
 
-    # @staticmethod
+        spell_effect = {
+            'effects': {
+                raw.get('damage_type'): str(raw.get('dice_count')) + 'd' + str(raw.get('dice'))
+            },
+            'half_damage_on_success': raw.get('half_damage_on_success')
+        }
+
+        return spell_effect
+
     def add(self, spell_id: int, spell_effect: dict):
         """
         Добавление нового эффекта для заклинания

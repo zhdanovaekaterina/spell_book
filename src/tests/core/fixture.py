@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from src.core.db.init import DatabaseDriver
+from src.core.db.db_driver import DatabaseDriver
 from src.core.db.models import Base
 from .data import import_data_data
 

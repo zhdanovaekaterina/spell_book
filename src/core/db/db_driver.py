@@ -4,8 +4,8 @@ from typing import List
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from .models import Base, SpellEffect
-from src.core.db.models import School
+from src.core.db.models import Base
+
 
 logger = logging.getLogger(__name__)
 
@@ -93,24 +93,3 @@ class DatabaseDriver:
         with self.session:
             query = self._get_select_query(entity, add_filter)
             return query.one()
-
-    # TODO: не нравится ОЧЕНЬ - подключение не должно использовать модели
-    def get_spell_effect(self, spell_id):
-        """
-        Получение эффектов для выбранного заклинания и ячейки
-        :return:
-        """
-
-        with self.session:
-            query = self.session.query(SpellEffect)\
-                .filter(SpellEffect.spell_id == spell_id)
-            result = query.one()
-
-            spell_effect = {
-                'effects': {
-                    result.damage_type.alias: str(result.dice_count) + 'd' + str(result.dice)
-                },
-                'half_damage_on_success': result.half_damage_on_success
-            }
-
-            return spell_effect

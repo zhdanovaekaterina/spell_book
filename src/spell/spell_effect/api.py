@@ -1,15 +1,13 @@
 from .db_driver import SpellEffectDatabaseDriver
 from src.core.error import SpellError
+from .instance import SpellEffectInstance
+from ...const import COUNTRIP_LEVEL, MAX_CELL_LEVEL
 
 
 class SpellEffectApi:
     """
     Апи для работы с эффектами заклинаний
     """
-
-    COUNTRIP_LEVEL = 0
-    MIN_CELL_LEVEL = 1
-    MAX_CELL_LEVEL = 9
 
     def __init__(self, db: SpellEffectDatabaseDriver):
         self.db = db
@@ -20,57 +18,101 @@ class SpellEffectApi:
         Если уровень не передан, возвращаются все доступные эффекты всех ячеек.
         :param spell_id:
         :param cell_level:
+        :return: dict
+                Если ячейка передана, возвращается словарь вида
+                    {'<тип урона>': '<кол-во кубиков>'}
+                    например, {'thunder': '3d8'}
+                Если ячейка не передана, возвращаются все доступные эффекты
+                    в разбивке по ячейкам вида
+                    {
+                        1: {'<тип урона>': '<кол-во кубиков>'},
+                        ...,
+                        9: {'<тип урона>': '<кол-во кубиков>'},
+                    }
+                    начиная с уровня заклинания
+
+        :raise: SpellError
+        """
+
+        obj = SpellEffectInstance(spell_id=spell_id, cell_level=cell_level)
+
+        self._check_valid_cell(obj)  # Проверяем что передана валидная ячейка
+        self.db.get_spell_effect(obj)  # Получаем данные из базы и дополняем объект
+
+        if cell_level is None:  # Если нет уровня ячейки, возвращаем все эффекты
+            spell_effect = self._get_all_effects_for_spell(obj)
+        else:  # Иначе возвращаем эффект для выбранного уровня ячейки
+            self._check_valid_level(obj)
+            spell_effect = self._get_effect_for_cell_level(obj)
+
+        if not spell_effect:  # Если в конце эффект не получен, что-то пошло не так, зовем ошибку
+            raise SpellError.internal_error()
+
+        return spell_effect
+
+    @staticmethod
+    def _check_valid_cell(obj):
+        """
+        Проверка является ли уровень ячейки валидным
+        :return:
+        :raise: SpellError
+        """
+        if type(obj.cell_level) == int and (obj.cell_level < COUNTRIP_LEVEL or obj.cell_level > MAX_CELL_LEVEL):
+            raise SpellError.invalid_cell_level(obj.cell_level)
+
+    @staticmethod
+    def _check_valid_level(raw):
+        """
+        Проверка является ли корректным переданный уровень ячейки
+        в зависимости от конкретного заклинания
+        :param raw:
+        :return:
+        :raise: SpellError
+        """
+        if raw.cell_level == 0 and raw.spell_level > 0:
+            raise SpellError.countrip_from_spell()
+        elif raw.cell_level > 0 and raw.spell_level == 0:
+            raise SpellError.spell_from_countrip()
+        elif raw.cell_level < raw.spell_level:
+            raise SpellError.higher_level(raw.spell_id, raw.spell_level, raw.cell_level)
+
+    @staticmethod
+    def _get_all_effects_for_spell(raw):
+        """
+        Получение всех эффектов для заклинания
+        :return:
+        """
+
+        level_difference = MAX_CELL_LEVEL - raw.spell_level
+
+        spell_effect = {}
+        for lvl in range(level_difference + 1):
+            dice_count = raw.dice_count + lvl * raw.add_dice_count
+
+            spell_effect[raw.spell_level + lvl] = {
+                raw.damage_type: str(dice_count) + 'd' + str(raw.dice)
+            }
+
+        return spell_effect
+
+    @staticmethod
+    def _get_effect_for_cell_level(raw):
+        """
+        Получение эффекта для конкретного уровня ячейки
         :return:
         :raise: SpellError
         """
 
-        # TODO: рефакторинг
-
-        if type(cell_level) == int and (cell_level < self.COUNTRIP_LEVEL or cell_level > self.MAX_CELL_LEVEL):
-            raise SpellError(f'Invalid cell level provided: {cell_level}; '
-                             f'must be between {self.COUNTRIP_LEVEL} and {self.MAX_CELL_LEVEL}')
-
-        raw = self.db.get_spell_effect(spell_id)
-
-        if raw is None:
-            raise SpellError(f'Spell with ID {spell_id} not found')
-
         dice_count = 0
+        if raw.cell_level == raw.spell_level:
+            dice_count = raw.dice_count
+        elif raw.cell_level > raw.spell_level:
+            level_difference = raw.cell_level - raw.spell_level
+            dice_count = raw.dice_count + raw.add_dice_count * level_difference
 
-        if cell_level is None:
-            base_dice_count = raw.get('dice_count')
-            add_dice_count = raw.get('add_dice_count')
-            level_difference = self.MAX_CELL_LEVEL - raw.get('spell_level')
-
-            spell_effect = {}
-            for lvl in range(level_difference + 1):
-                dice_count = base_dice_count + lvl * add_dice_count
-
-                spell_effect[raw.get('spell_level') + lvl] = {
-                    raw.get('damage_type'): str(dice_count) + 'd' + str(raw.get('dice'))
-                }
-
-        else:
-            if cell_level == 0 and raw.get('spell_level') > 0:
-                raise SpellError('You are trying to get countrip effect from spell')
-            elif cell_level > 0 and raw.get('spell_level') == 0:
-                raise SpellError('You are trying to get spell effect from countrip')
-
-            if cell_level == raw.get('spell_level'):
-                dice_count = raw.get('dice_count')
-            elif cell_level > raw.get('spell_level'):
-                base_dice_count = raw.get('dice_count')
-                add_dice_count = raw.get('add_dice_count')
-                level_difference = cell_level - raw.get('spell_level')
-                dice_count = base_dice_count + add_dice_count * level_difference
-            elif cell_level < raw.get('spell_level'):
-                spell_level = raw.get('spell_level')
-                raise SpellError(f'This spell has higher base cell level; spell ID: {spell_id}, '
-                                 f'spell level: {spell_level}, you asked for level {cell_level}')
-
-            spell_effect = {
-                raw.get('damage_type'): str(dice_count) + 'd' + str(raw.get('dice'))
-            }
+        spell_effect = {
+            raw.damage_type: str(dice_count) + 'd' + str(raw.dice)
+        }
 
         return spell_effect
 

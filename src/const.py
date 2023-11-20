@@ -1,0 +1,5 @@
+# Константы
+
+COUNTRIP_LEVEL = 0
+MIN_CELL_LEVEL = 1
+MAX_CELL_LEVEL = 9

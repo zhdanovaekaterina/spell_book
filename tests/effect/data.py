@@ -1,4 +1,4 @@
-from src.core.db.models import DamageType, SpellEffect, Spell
+from src.core.db.models import DamageType, Effect, Spell
 
 
 def effects_data():
@@ -15,6 +15,10 @@ def effects_data():
         DamageType(
             alias='force',
             title='Силовое поле'
+        ),
+        DamageType(
+            alias='cold',
+            title='Холод'
         ),
         Spell(
             id=62,
@@ -56,7 +60,27 @@ def effects_data():
             ritual=False,
             is_active=False
         ),
-        SpellEffect(
+        Spell(
+            id=396,
+            alias='frostbite',
+            title='Обморожение',
+            description='',
+            level=0,
+            school='',
+            time_to_cast='',
+            distance='',
+            duration='',
+            components=1,
+            spell_type='',
+            spell_mass='',
+            spell_roll='',
+            source='',
+            entity='',
+            concentration=False,
+            ritual=False,
+            is_active=False
+        ),
+        Effect(
             id=1,
             spell_id=62,
             dice_count=3,
@@ -64,12 +88,20 @@ def effects_data():
             dice=8,
             damage_type_alias='thunder'
         ),
-        SpellEffect(
+        Effect(
             id=2,
             spell_id=2451,
             dice_count=8,
             add_dice_count=1,
             dice=8,
             damage_type_alias='force'
+        ),
+        Effect(
+            id=3,
+            spell_id=396,
+            dice_count=1,
+            add_dice_count=1,
+            dice=6,
+            damage_type_alias='cold'
         ),
     ]

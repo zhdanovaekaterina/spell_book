@@ -147,7 +147,7 @@ class Spell(Base):
     ritual = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=False)
 
-    spell_effect = relationship('SpellEffect', back_populates='spell')
+    effect = relationship('Effect', back_populates='spell')
 
     def __repr__(self):
         return f'<Spell: id={self.id}, alias={self.alias}, title={self.title}>'
@@ -162,35 +162,37 @@ class DamageType(Base):
     alias = Column(String(32), primary_key=True)
     title = Column(String(255), nullable=False)
 
-    spell_effect = relationship('SpellEffect', back_populates='damage_type')
+    effect = relationship('Effect', back_populates='damage_type')
 
     def __repr__(self):
         return f'<DamageType: alias={self.alias}, title={self.title}>'
 
 
-class SpellEffect(Base):
+class Effect(Base):
     """
     Справочник по эффектам заклинаний
     """
 
-    __tablename__ = 'spell_effect'
+    __tablename__ = 'effect'
     id = Column(Integer, primary_key=True, autoincrement=True)
     spell_id = Column(Integer, ForeignKey('spell.id'), nullable=False)
     dice_count = Column(SmallInteger, nullable=False, default=1)
     add_dice_count = Column(SmallInteger)
     dice = Column(SmallInteger, nullable=False)
+    add_effect = Column(Text)
     damage_type_alias = Column(String(32), ForeignKey('damage_type.alias'), nullable=False)
 
-    spell = relationship('Spell', back_populates='spell_effect')
-    damage_type = relationship('DamageType', back_populates='spell_effect')
+    spell = relationship('Spell', back_populates='effect')
+    damage_type = relationship('DamageType', back_populates='effect')
 
     def __repr__(self):
-        return f'<SpellEffect: id={self.id}, ' \
+        return f'<Effect: id={self.id}, ' \
                f'spell={self.spell}, ' \
                f'dice_count={self.dice_count}, ' \
                f'add_dice_count={self.add_dice_count}, ' \
                f'dice={self.dice}, ' \
-               f'damage_type={self.damage_type}>'
+               f'damage_type={self.damage_type}, ' \
+               f'add_effect=\'{self.add_effect}\'>'
 
 
 class CastType(Base):

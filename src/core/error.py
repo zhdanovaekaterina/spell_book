@@ -1,4 +1,4 @@
-from ..const import COUNTRIP_LEVEL, MAX_CELL_LEVEL
+from ..const import COUNTRIP_LEVEL, MAX_CELL_LEVEL, MIN_CHARACTER_LEVEL, MAX_CHARACTER_LEVEL
 
 
 class SpellError(Exception):
@@ -9,12 +9,20 @@ class SpellError(Exception):
     COUNTRIP_LEVEL = 0
 
     @staticmethod
-    def invalid_cell_level(cell_level):
+    def invalid_cell_level(level):
         """
         Исключение при некорректно переданном уровне ячейки
         """
-        return SpellError(f'Invalid cell level provided: {cell_level}; '
+        return SpellError(f'Invalid cell level provided: {level}; '
                           f'must be between {COUNTRIP_LEVEL} and {MAX_CELL_LEVEL}')
+
+    @staticmethod
+    def invalid_character_level(level):
+        """
+        Исключение при некорректно переданном уровне персонажа
+        """
+        return SpellError(f'Invalid character level provided: {level}; '
+                          f'must be between {MIN_CHARACTER_LEVEL} and {MAX_CHARACTER_LEVEL}')
 
     @staticmethod
     def effect_not_found(spell_id):

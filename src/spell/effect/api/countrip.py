@@ -1,6 +1,11 @@
+import logging
+
 from .api import EffectApi
 from src.const import MIN_CHARACTER_LEVEL, MAX_CHARACTER_LEVEL
 from src.core.error import SpellError
+
+
+logger = logging.getLogger(__name__)
 
 
 class CountripEffectApi(EffectApi):

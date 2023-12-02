@@ -1,8 +1,12 @@
+import logging
 from abc import ABC, abstractmethod
 
 from src.spell.effect.db_driver import EffectDatabaseDriver
 from src.spell.effect.instance import EffectInstance
 from src.core.error import SpellError
+
+
+logger = logging.getLogger(__name__)
 
 
 class EffectApi(ABC):

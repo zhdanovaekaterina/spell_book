@@ -71,7 +71,8 @@ class DatabaseDriver:
 
         return query
 
-    def get(self, entity: Base, add_filter: dict = None):
+    # TODO: заменить add_filter на kwargs
+    def get(self, entity: Base | List[Base], add_filter: dict = None):
         """
         Возвращает выборку из базы
         :param entity:

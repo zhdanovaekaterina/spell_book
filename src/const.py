@@ -6,3 +6,5 @@ MAX_CELL_LEVEL = 9
 
 MIN_CHARACTER_LEVEL = 1
 MAX_CHARACTER_LEVEL = 20
+
+SPELL_LIST_PATH = 'src/data/spell_list.html'

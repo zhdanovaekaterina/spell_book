@@ -1,10 +1,27 @@
 import logging
 
-from .fixture import clean_db, import_data
+from .fixture import clean_db, import_data, dict_db
+from .data import dict_data
 from src.core.importer import Importer
 from src.core.db.models import School, TimeToCast, Distance, Duration
 
 logger = logging.getLogger(__name__)
+
+
+def test_get_data(dict_db):
+    """
+    Тест получения всех данных сущности
+    :return:
+    """
+
+    db_data = dict_db.get(School)
+    needed_data = dict_data()
+
+    assert len(db_data) == len(needed_data)
+
+    for num, item in enumerate(db_data):
+        assert item.alias == needed_data[num].alias
+        assert item.title == needed_data[num].title
 
 
 def test_add_one_item(clean_db):

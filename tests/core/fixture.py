@@ -8,7 +8,7 @@ import pytest
 
 from src.core.db.db_driver import DatabaseDriver
 from src.core.db.models import Base
-from .data import import_data_data
+from .data import import_data_data, dict_data
 
 from ..config import TEST_DB
 
@@ -43,6 +43,19 @@ def clean_db():
     db.create_all()
 
     yield db
+
+
+@pytest.fixture()
+def dict_db():
+    """
+    Возвращает базу данных с заполненными значениями словаря
+    """
+
+    db = DatabaseDriver(TEST_DB, Base)
+    db.create_all()
+    db.add_many(dict_data())
+
+    return db
 
 
 @pytest.fixture()

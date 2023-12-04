@@ -1,3 +1,6 @@
+from src.core.db.models import School
+
+
 def import_data_data():
     """
     Данные для фикстуры import_data
@@ -45,3 +48,24 @@ def import_data_data():
             },
         ]
     }
+
+
+def dict_data():
+    """
+    Данные для фикстуры dict_db
+    :return:
+    """
+    return [
+        School(
+            title='Вызов',
+            alias='conjuration'
+        ),
+        School(
+            title='Некромантия',
+            alias='necromancy'
+        ),
+        School(
+            title='Воплощение',
+            alias='evocation'
+        ),
+    ]

@@ -15,13 +15,14 @@ class Parser:
 
     def __init__(self):
         self.url = ''
+        self.dictionaries = []
 
-    async def _get(self):
+    async def get(self, url):
         """
         Отправляет GET-запрос
         """
 
-        async with ClientSession() as session, session.get(self.url) as resp:
+        async with ClientSession() as session, session.get(url) as resp:
             return await resp.text()
 
     @staticmethod
@@ -82,3 +83,59 @@ class Parser:
 
         founded_items = soup.select('a')
         return [self._parse_list_data(item) for item in founded_items]
+
+    @staticmethod
+    def _parse_detail_items(soup_item):
+        """
+        Забирает данные заклинания с детальной страницы
+        :param soup_item:
+        :return:
+        """
+
+        params = soup_item.select('.params > li')
+
+        temp = {}
+        for p in params:
+            text = p.get_text()
+            text_list = text.split(': ')
+
+            if len(text_list) == 2:
+                temp[text_list[0]] = text_list[1]
+
+        description = soup_item.select('div[itemprop="description"]')[0].get_text()
+
+        classes_str = temp.get('Классы')
+        classes = classes_str.split(', ') if classes_str else []
+
+        subclasses_str = temp.get('Архетипы')
+        subclasses = subclasses_str.split(', ') if classes_str else []
+
+        return {
+            'description': description,
+            'classes': classes,
+            'subclasses': subclasses,
+            'time_to_cast_alias': temp.get('Время накладывания'),
+            'distance_alias': temp.get('Дистанция'),
+            'duration_alias': temp.get('Длительность'),
+            'source_alias': temp.get('Источник'),
+        }
+
+    async def parse_detail_raw(self, item_url):
+        """
+        Забираем данные заклинания по переданной ссылке с детальной страницы
+        :param item_url:
+        :return:
+        """
+        raw_data = await self.get(item_url)
+        soup = BeautifulSoup(raw_data, 'html.parser')
+
+        return self._parse_detail_items(soup)
+
+    def parse(self, list_path):
+        """
+        Парсинг всех данных заклинаний
+        :param list_path:
+        :return:
+        """
+
+        list_data = self.parse_list(list_path)

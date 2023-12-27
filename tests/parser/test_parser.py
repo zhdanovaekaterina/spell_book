@@ -1,5 +1,8 @@
+import pytest
+
 from src.parser.parser import Parser
-from .data import parsed_list
+from .data import parsed_list, params_for_detail_raw
+from .fixture import fake_parser
 
 
 def test_parse_spell_list():
@@ -8,7 +11,7 @@ def test_parse_spell_list():
     :return:
     """
     parser = Parser()
-    spell_list = parser.parse_list('tests/parser/fake_spell_list.html')
+    spell_list = parser.parse_list('tests/data/fake_spell_list.html')
 
     target_data = parsed_list()
 
@@ -26,3 +29,15 @@ def test_parse_spell_list():
     # Проверяем парсинг метки ритуала
     assert spell_list[2]['ritual'] is True
     assert spell_list[0]['ritual'] is False
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("path,expected", params_for_detail_raw())
+async def test_parse_spell_detail(fake_parser, path, expected):
+    """
+    Тест парсинга данных детальной страницы
+    :return:
+    """
+
+    data = await fake_parser.parse_detail_raw(path)
+    assert data == expected

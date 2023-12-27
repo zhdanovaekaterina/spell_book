@@ -1,5 +1,6 @@
 import logging
 import re
+import csv
 
 from bs4 import BeautifulSoup
 from aiohttp import ClientSession
@@ -27,8 +28,42 @@ class Parser:
 
     @staticmethod
     def _read_file(list_path):
+        """
+        Чтение данных из файла
+        :param list_path:
+        :return:
+        """
+
         with open(list_path, 'r', encoding='utf-8') as file:
             return file.read()
+
+    @staticmethod
+    def _to_csv(data, path, mode='w'):
+        """
+        Сохранение данных в csv
+        :param data:
+        :param path:
+        :return:
+        """
+
+        keys = data[0].keys()
+
+        with open(path, mode, newline='', encoding='utf-8') as output_file:
+            dict_writer = csv.DictWriter(output_file, keys)
+            dict_writer.writeheader()
+            dict_writer.writerows(data)
+
+    @staticmethod
+    def _read_csv(list_path):
+        """
+        Чтение данных из файла
+        :param list_path:
+        :return:
+        """
+
+        with open(list_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            return [row for row in reader]
 
     @staticmethod
     def _parse_list_data(soup_item):
@@ -102,18 +137,13 @@ class Parser:
             if len(text_list) == 2:
                 temp[text_list[0]] = text_list[1]
 
-        description = soup_item.select('div[itemprop="description"]')[0].get_text()
-
-        classes_str = temp.get('Классы')
-        classes = classes_str.split(', ') if classes_str else []
-
-        subclasses_str = temp.get('Архетипы')
-        subclasses = subclasses_str.split(', ') if classes_str else []
+        description_raw = soup_item.select('div[itemprop="description"]')[0].get_text()
+        description = description_raw.replace('\n', ' ')
 
         return {
             'description': description,
-            'classes': classes,
-            'subclasses': subclasses,
+            'classes': temp.get('Классы'),
+            'subclasses': temp.get('Архетипы'),
             'time_to_cast_alias': temp.get('Время накладывания'),
             'distance_alias': temp.get('Дистанция'),
             'duration_alias': temp.get('Длительность'),

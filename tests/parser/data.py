@@ -22,14 +22,21 @@ def params_for_detail_raw():
             'tests/data/fake_countrip_detail.html',
             {
                 'description': 'Описание заговора.\nВ нескольких абзацах.\nУрон этого заклинания увеличивается на 1к6, когда вы достигаете 5-го уровня (2к6), 11-го уровня (3к6) и 17-го уровня (4к6).\n',
-                'classes': ['волшебник', 'чародей'],
-                'subclasses': ['артиллерист (изобретатель)'],
+                'classes': 'волшебник, чародей',
+                'subclasses': 'артиллерист (изобретатель)',
                 'time_to_cast_alias': '1 действие',
                 'distance_alias': '60 футов',
                 'duration_alias': 'Мгновенная',
                 'source_alias': "«Player's handbook»",
             }
         )
+    ]
+
+
+def params_for_csv_saving():
+    return [
+        (parsed_list(), 'parsed_spell_list.csv', 1, 'id', '13'),
+        ([params_for_detail_raw()[0][1]], 'parsed_spell_detail.csv', 1, 'distance_alias', '60 футов')
     ]
 
 

@@ -1,6 +1,7 @@
 import logging
 import re
 import csv
+from time import sleep
 
 from bs4 import BeautifulSoup
 from aiohttp import ClientSession
@@ -13,6 +14,9 @@ class Parser:
     """
     Парсер заклинаний с dnd.su
     """
+
+    LIMIT = 20  # Размер партии, которую будем парсить за один раз
+    TIMEOUT = 3  # Таймаут запросов
 
     def __init__(self):
         self.url = ''
@@ -161,11 +165,33 @@ class Parser:
 
         return self._parse_detail_items(soup)
 
-    def parse(self, list_path):
+    async def parse(self, list_path, target_path):
         """
         Парсинг всех данных заклинаний
-        :param list_path:
+        :param list_path: Путь, по которому лежит список всех заклинаний в html
+        :param target_path: Путь, по которому необходимо сохранить файл с данными
         :return:
         """
 
-        list_data = self.parse_list(list_path)
+        data = self.parse_list(list_path)
+
+        offset = 0
+        count = len(data)
+
+        while offset < count:
+
+            start = offset
+            end = offset + self.LIMIT
+            batch = data[start:end]
+
+            logger.info(f'batch {start} - {end}')
+
+            out = []
+            for row in batch:
+                parsed = await self.parse_detail_raw(row['link'])
+                out.append(row | parsed)
+
+            self._to_csv(out, target_path, 'a')
+            offset += self.LIMIT
+
+            sleep(self.TIMEOUT)

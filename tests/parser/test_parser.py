@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from src.parser.parser import Parser
+from src.helpers.file_helper import FileHelper
 from .data import parsed_list, params_for_detail_raw, params_for_csv_saving
 from .fixture import fake_parser, temp_dir
 
@@ -61,9 +62,8 @@ def test_save_to_csv(temp_dir, data, file_name, rows_count, field, expected):
 
     file_path = Path(temp_dir, file_name)
 
-    parser = Parser()
-    parser._to_csv(data, file_path)
-    data_from_file = parser._read_csv(file_path)
+    FileHelper.to_csv(data, file_path)
+    data_from_file = FileHelper.read_csv(file_path)
 
     assert len(data_from_file) == rows_count
     assert data_from_file[0][field] == expected

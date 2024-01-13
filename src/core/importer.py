@@ -1,7 +1,7 @@
 import sys
 import csv
 
-import src.core.helpers as helpers
+import src.helpers.helpers as helpers
 
 
 class Importer:

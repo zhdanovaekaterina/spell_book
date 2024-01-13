@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from src.parser.parser import Parser
+from src.helpers.file_helper import FileHelper
 from .mock import mock_get
 
 
@@ -34,3 +35,15 @@ def temp_dir():
 
     # Очистить директорию с временными файлами
     shutil.rmtree(temp_dir_path)
+
+
+@pytest.fixture(scope='module')
+def multilist():
+    """
+    Читает из файла данные для очистки и возвращает их
+    """
+
+    path = Path(Path.cwd(), 'tests', 'data', 'fake_spell_to_class.csv')
+    data = FileHelper.read_csv(path)
+    
+    return data

@@ -1,4 +1,4 @@
-from src.core import helpers
+from src.helpers import helpers
 
 
 def test_snake_to_camel():

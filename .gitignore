@@ -6,3 +6,4 @@ alembic.ini
 .pytest_cache
 tests/temp_files
 data
+.vscode

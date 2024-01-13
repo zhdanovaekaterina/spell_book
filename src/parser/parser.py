@@ -6,6 +6,8 @@ from time import sleep
 from bs4 import BeautifulSoup
 from aiohttp import ClientSession
 
+from src.helpers.file_helper import FileHelper
+
 
 logger = logging.getLogger(__name__)
 
@@ -29,45 +31,6 @@ class Parser:
 
         async with ClientSession() as session, session.get(url) as resp:
             return await resp.text()
-
-    @staticmethod
-    def _read_file(list_path):
-        """
-        Чтение данных из файла
-        :param list_path:
-        :return:
-        """
-
-        with open(list_path, 'r', encoding='utf-8') as file:
-            return file.read()
-
-    @staticmethod
-    def _to_csv(data, path, mode='w'):
-        """
-        Сохранение данных в csv
-        :param data:
-        :param path:
-        :return:
-        """
-
-        keys = data[0].keys()
-
-        with open(path, mode, newline='', encoding='utf-8') as output_file:
-            dict_writer = csv.DictWriter(output_file, keys)
-            dict_writer.writeheader()
-            dict_writer.writerows(data)
-
-    @staticmethod
-    def _read_csv(list_path):
-        """
-        Чтение данных из файла
-        :param list_path:
-        :return:
-        """
-
-        with open(list_path, 'r', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            return [row for row in reader]
 
     @staticmethod
     def _parse_list_data(soup_item):
@@ -117,7 +80,7 @@ class Parser:
         :param list_path:
         :return:
         """
-        raw_data = self._read_file(list_path)
+        raw_data = FileHelper.read_file(list_path)
         soup = BeautifulSoup(raw_data, 'html.parser')
 
         founded_items = soup.select('a')
@@ -191,7 +154,7 @@ class Parser:
                 parsed = await self.parse_detail_raw(row['link'])
                 out.append(row | parsed)
 
-            self._to_csv(out, target_path, 'a')
+            FileHelper.to_csv(out, target_path, 'a')
             offset += self.LIMIT
 
             sleep(self.TIMEOUT)

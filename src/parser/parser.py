@@ -158,3 +158,39 @@ class Parser:
             offset += self.LIMIT
 
             sleep(self.TIMEOUT)
+
+    @staticmethod
+    def _divide(data: list, column_name: str, separator: str = ',') -> dict:
+        """
+        Пересобирает переданный список словарей data в новый, разбивая строку
+        по сепаратору
+        """
+
+        out = []
+
+        for item in data:
+
+            multilist = item[column_name]
+            divided = multilist.split(separator)
+            
+            for col in divided:
+                temp = {}
+                temp['spell_id'] = item['spell_id']
+
+                col_value = col.strip()
+                temp[column_name] = col_value
+                out.append(temp)
+        
+        return out
+
+    @staticmethod
+    def divide_data(list_path, target_path, column_name):
+        """
+        Читает данные по пути list_path, делит мультисписок по column_name
+        на отдельные записи и сохраняет по пути target_path.
+        На входе ожидает csv, сохраняет также в csv.
+        """
+
+        data = FileHelper.read_csv(list_path)
+        divided = Parser._divide(data, column_name)
+        FileHelper.to_csv(divided, target_path)

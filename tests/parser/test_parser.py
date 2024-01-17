@@ -1,11 +1,12 @@
 from pathlib import Path
+from pprint import pprint
 
 import pytest
 
 from src.parser.parser import Parser
 from src.helpers.file_helper import FileHelper
 from .data import parsed_list, params_for_detail_raw, params_for_csv_saving
-from .fixture import fake_parser, temp_dir
+from .fixture import fake_parser, temp_dir, multilist
 
 
 @pytest.mark.dependency()
@@ -67,3 +68,12 @@ def test_save_to_csv(temp_dir, data, file_name, rows_count, field, expected):
 
     assert len(data_from_file) == rows_count
     assert data_from_file[0][field] == expected
+
+
+def test_dividing_multilist(multilist):
+    """
+    Тест разделения данных мультисписка на отдельные записи
+    """
+    
+    divided = Parser._divide(multilist, 'classes')
+    assert len(divided) == 31

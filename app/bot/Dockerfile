@@ -27,4 +27,4 @@ RUN \
 
 USER zhdanova
 
-CMD [ "python", "./src/__init__.py" ]
+CMD [ "python", "./src/main.py" ]

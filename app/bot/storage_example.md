@@ -10,10 +10,7 @@ data_storage = {
         'learn': True,
         'prepare': True
     },
-    'spell_data': {
-        'available': [],
-        'learned': [],  # если доступно
-        'prepared': [],  # если доступно
-    }
+    'spell_data': {},  # список заклинаний, с которым работаем
+    'spell_page_count': 0  # кол-во страниц
 }
 ```

@@ -60,3 +60,49 @@ class Gateway:
 
         except ValueError:
             return False
+
+    @staticmethod
+    def spell_list_available(user_id):
+        """
+        Получение списка доступных заклинаний для кастера
+        """
+        return fake_spell_list()
+
+    @staticmethod
+    def spell_list_learned(user_id):
+        """
+        Получение списка изученных заклинаний для кастера
+        """
+        return fake_spell_list()
+
+    @staticmethod
+    def spell_list_prepared(user_id):
+        """
+        Получение списка подготовленных заклинаний для кастера
+        """
+        return fake_spell_list()
+
+
+def fake_spell_list():
+    return [
+        {
+            'alias': 'spell_1',
+            'title': 'Заклинание 1',
+            'level': 1
+        },
+        {
+            'alias': 'spell_2',
+            'title': 'Заклинание 2',
+            'level': 1
+        },
+        {
+            'alias': 'spell_3',
+            'title': 'Заклинание 3',
+            'level': 1
+        },
+        {
+            'alias': 'spell_4',
+            'title': 'Заклинание 4',
+            'level': 1
+        },
+    ]

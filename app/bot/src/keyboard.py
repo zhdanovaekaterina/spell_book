@@ -1,11 +1,15 @@
+from typing import List, Dict
+
 from keyboard_builder import KeyboardBuilder
 from gateway import Gateway
-from callbacks import ChooseClass, ChooseAction, SpellAction
+from callbacks import (ChooseClass, ChooseAction, SpellAction, Paginator,
+                       ShowSpells)
 
 
 def obj_getter(func):
     """
-    Декоратор, который создает объект клавиатуры, передает его методу и возвращает
+    Декоратор, который создает объект клавиатуры,
+    передает его методу и возвращает наверх
     """
 
     def wrapper(*args, **kwargs):
@@ -20,6 +24,9 @@ class Keyboard(KeyboardBuilder):
     """
     Построитель пользовательской клавиатуры
     """
+
+    PAGINATION = 3  # кол-во записей для пагинации
+    # TODO: сменить на 10-15 после отладки
 
     @staticmethod
     @obj_getter
@@ -51,3 +58,46 @@ class Keyboard(KeyboardBuilder):
         if available_actions.get('prepare'):
             button = ChooseAction(action=SpellAction.PREPARED).pack()
             obj.add_callback_button('Подготовленные заклинания', button)
+
+    @staticmethod
+    @obj_getter
+    def spell_list(obj, spell_list: List[Dict], page_num, page_count):
+        """
+        Построитель клавиатуры с пагинацией для списка заклинаний
+        """
+
+        for spell_item in spell_list:
+            button = ShowSpells(action=Paginator.DETAIL, page_num=page_num,
+                                spell_alias=spell_item.get('alias')).pack()
+            obj.add_row_button(spell_item.get('title'), button)
+
+        if page_num != 1:
+            button = (ShowSpells(action=Paginator.PREV, page_num=page_num-1)
+                      .pack())
+            obj.add_row_button('<-', button)
+        else:
+            button = (ShowSpells(action=Paginator.NONE, page_num=page_num)
+                      .pack())
+            obj.add_row_button('--', button)
+
+        button = ShowSpells(action=Paginator.NONE, page_num=page_num).pack()
+        obj.add_callback_button(f'{page_num}/{page_count}', button)
+
+        if page_num < page_count:
+            button = (ShowSpells(action=Paginator.NEXT, page_num=page_num+1)
+                      .pack())
+            obj.add_callback_button('->', button)
+        else:
+            button = (ShowSpells(action=Paginator.NONE, page_num=page_num)
+                      .pack())
+            obj.add_callback_button('--', button)
+
+    @staticmethod
+    @obj_getter
+    def spell_detail(obj, prev_page):
+        """
+        Построитель клавиатуры для детальной страницы заклинания
+        """
+
+        button = ShowSpells(action=Paginator.INIT, page_num=prev_page).pack()
+        obj.add_callback_button('Назад', button)

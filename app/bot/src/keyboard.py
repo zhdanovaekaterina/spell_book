@@ -28,6 +28,7 @@ class Keyboard(KeyboardBuilder):
         Выбор класса
         """
 
+        # TODO: вынести все обращения к Gateway наружу
         classes = Gateway.get_classes()
         for alias, title in classes.items():
             button = ChooseClass(chs_class=alias).pack()
@@ -35,16 +36,13 @@ class Keyboard(KeyboardBuilder):
 
     @staticmethod
     @obj_getter
-    def choose_action(obj, user_class):
+    def choose_action(obj, available_actions):
         """
         Выбор действия с заклинаниями
         """
 
         button = ChooseAction(action=SpellAction.AVAILABLE).pack()
         obj.add_callback_button('Доступные заклинания', button)
-
-        available_actions = Gateway.get_available_actions(user_class)
-        print(available_actions)
 
         if available_actions.get('learn'):
             button = ChooseAction(action=SpellAction.LEARNT).pack()

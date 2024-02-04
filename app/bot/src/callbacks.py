@@ -12,9 +12,9 @@ class ChooseClass(CallbackData, prefix='choose_class'):
 class SpellAction(Enum):
     """Варианты коллбэков для выборки заклинаний"""
 
-    AVAILABLE = 'available'
-    LEARNT = 'learnt'
-    PREPARED = 'prepared'
+    LEARN = 'learnt'
+    PREPARE = 'prepared'
+    BOTH = 'both'
 
 
 class ChooseAction(CallbackData, prefix='choose_action'):

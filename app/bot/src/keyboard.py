@@ -43,21 +43,16 @@ class Keyboard(KeyboardBuilder):
 
     @staticmethod
     @obj_getter
-    def choose_action(obj, available_actions):
+    def choose_action(obj):
         """
         Выбор действия с заклинаниями
         """
 
-        button = ChooseAction(action=SpellAction.AVAILABLE).pack()
-        obj.add_callback_button('Доступные заклинания', button)
+        button = ChooseAction(action=SpellAction.LEARN).pack()
+        obj.add_callback_button('Изученные заклинания', button)
 
-        if available_actions.get('learn'):
-            button = ChooseAction(action=SpellAction.LEARNT).pack()
-            obj.add_callback_button('Изученные заклинания', button)
-
-        if available_actions.get('prepare'):
-            button = ChooseAction(action=SpellAction.PREPARED).pack()
-            obj.add_callback_button('Подготовленные заклинания', button)
+        button = ChooseAction(action=SpellAction.PREPARE).pack()
+        obj.add_callback_button('Подготовленные заклинания', button)
 
     @staticmethod
     @obj_getter

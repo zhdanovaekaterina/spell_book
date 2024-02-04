@@ -1,3 +1,8 @@
+from typing import List, Dict
+
+from callbacks import SpellAction
+
+
 class Gateway:
     """
     Шлюз обмена данными с ядром
@@ -16,27 +21,18 @@ class Gateway:
         }
 
     @staticmethod
-    def get_available_actions(user_class):
+    def get_available_action(user_class) -> SpellAction:
         """
         Получение доступных действий для класса
         """
 
         match user_class:
             case 'bard':
-                return {
-                    'learn': True,
-                    'prepare': False,
-                }
+                return SpellAction.LEARN
             case 'wizard':
-                return {
-                    'learn': True,
-                    'prepare': True,
-                }
+                return SpellAction.BOTH
             case 'cleric':
-                return {
-                    'learn': False,
-                    'prepare': True,
-                }
+                return SpellAction.PREPARE
 
     @staticmethod
     def register_user(user_class, user_level):
@@ -69,21 +65,16 @@ class Gateway:
         return fake_spell_list()
 
     @staticmethod
-    def spell_list_learned(user_id):
+    def user_spell_list(user_id, list_type: SpellAction) -> List[Dict]:
         """
-        Получение списка изученных заклинаний для кастера
+        Получение списка изученных или подготовленных заклинаний для кастера
         """
-        return fake_spell_list()
 
-    @staticmethod
-    def spell_list_prepared(user_id):
-        """
-        Получение списка подготовленных заклинаний для кастера
-        """
+        assert list_type != SpellAction.BOTH
         return fake_spell_list()
 
 
-def fake_spell_list():
+def fake_spell_list() -> List[Dict]:
     return [
         {
             'alias': 'spell_1',

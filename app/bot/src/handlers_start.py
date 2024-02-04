@@ -11,7 +11,6 @@ from gateway import Gateway
 from filters import NotRegistered
 from states import RegistrationState
 
-
 # Логгер и роутер
 logger = logging.getLogger(__name__)
 router = Router()
@@ -71,25 +70,22 @@ async def cmd_register_user(event: Message,
 
     user_class = storage.get('user_class')
     user_id = Gateway.register_user(user_class, user_level)
-    available_actions = Gateway.get_available_actions(user_class)
 
     # обновляем данные пользователя в хранилище
     await state.update_data({
         'user_id': user_id,
         'level': user_level,
-        'user_class_properties': available_actions
     })
 
     await state.set_state()
-    await event.answer(f'Вы выбрали класс {user_class} уровня {user_level}',
-                       reply_markup=Keyboard.choose_action(available_actions))
+    await event.answer(f'Вы выбрали класс {user_class} уровня {user_level}')
 
 
 # ############# ИНТЕРФЕЙС ДЛЯ ЗАРЕГИСТРИРОВАННОГО ПОЛЬЗОВАТЕЛЯ ##############
 
 @router.message(Command(commands=['start']))
 async def cmd_start(event: Message,
-                           state: FSMContext):
+                    state: FSMContext):
     """
     TODO: Стартовый хендлер для зарегистрированных пользователей
     """

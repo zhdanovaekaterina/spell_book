@@ -7,7 +7,13 @@ from aiogram import Bot, Dispatcher
 from aiogram.exceptions import TelegramRetryAfter, TelegramConflictError
 from aiogram.dispatcher.fsm.storage.memory import MemoryStorage
 
-import handlers
+import handlers_start
+import handlers_spell_list
+import handlers_my_spells
+import handlers_my_cells
+import handlers_long_rest
+import handlers_level_up
+
 import config as c
 
 
@@ -18,7 +24,12 @@ def create_bot_and_dp():
     dp = Dispatcher(storage=MemoryStorage())
 
     # Подключаем роутеры
-    dp.include_router(handlers.router)
+    dp.include_router(handlers_start.router)
+    dp.include_router(handlers_spell_list.router)
+    dp.include_router(handlers_my_spells.router)
+    dp.include_router(handlers_my_cells.router)
+    dp.include_router(handlers_long_rest.router)
+    dp.include_router(handlers_level_up.router)
 
     return bot, dp
 

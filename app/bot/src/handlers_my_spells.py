@@ -41,13 +41,8 @@ async def cmd_my_spells_command(event: Message,
     """
 
     storage = await state.get_data()
-    # user_id = storage.get('user_id')
-
-    user_id = 1  # TODO: убрать заглушку
-    available_action = storage.get('user_class_action')
-
-    spell_list = Gateway.user_spell_list(user_id, available_action)
-    await show_user_spells(event, spell_list)
+    action = storage.get('user_class_action')
+    await show_user_spells(event, action, state)
 
 
 @router.callback_query(ChooseAction.filter())
@@ -58,27 +53,30 @@ async def cmd_my_spells_callback(callback: CallbackQuery,
     Отображение списка доступных заклинаний для пользователя по коллбэку
     """
 
-    # storage = await state.get_data()
-    # user_id = storage.get('user_id')
-
-    user_id = 1  # TODO: убрать заглушку
-
-    spell_list = Gateway.user_spell_list(user_id, callback_data.action)
-    await show_user_spells(callback.message, spell_list)
+    await show_user_spells(callback.message, callback_data.action, state)
     await callback.answer()
 
 
-async def show_user_spells(message, spell_list):
+async def show_user_spells(message, action, state):
     """
     Отображение списка заклинаний для пользователя
     """
 
+    # storage = await state.get_data()
+    # user_id = storage.get('user_id')
+    user_id = 1  # TODO: убрать заглушку
+
+    spell_list = Gateway.user_spell_list(user_id, action)
     page_count = f.get_page_count(spell_list, Keyboard.PAGINATION)
+
+    await state.update_data(
+        spell_data=spell_list,
+        spell_page_count=page_count
+    )
+
     sliced_list = f.slice_list(spell_list, 1, Keyboard.PAGINATION)
 
     await message.answer(
         'Список заклинаний:',
         reply_markup=Keyboard.spell_list(sliced_list, 1, page_count)
     )
-
-    # TODO: навигация по списку
